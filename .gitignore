@@ -1,0 +1,4 @@
+# Exclude sensitive files
+.env
+*.local
+*.log
