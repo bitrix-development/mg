@@ -1,11 +1,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: /pages/login.php');
     exit();
 }
 
-require_once '../db.php';
+require_once __DIR__ . '/db.php';
 
 // Проверка: только admin может видеть логи
 $stmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
@@ -13,21 +13,27 @@ $stmt->execute([$_SESSION['user_id']]);
 $role = $stmt->fetchColumn();
 
 if ($role !== 'admin') {
-    header('Location: dashboard.php');
+    header('Location: /pages/dashboard.php');
     exit();
 }
 
-$stmt = $pdo->query("SELECT * FROM user_logs ORDER BY created_at DESC LIMIT 100");
+// ВАЖНО: user_logs -> user_actions
+$stmt = $pdo->query("
+    SELECT ua.*
+    FROM user_actions ua
+    ORDER BY ua.created_at DESC
+    LIMIT 200
+");
 $logs = $stmt->fetchAll();
 ?>
 
-<?php include '../includes/header.php'; ?>
+<?php include __DIR__ . '/includes/header.php'; ?>
 
 <h2>Логи действий</h2>
 <table border="1" cellpadding="5">
     <tr>
         <th>Время</th>
-        <th>Пользователь</th>
+        <th>Пользователь (user_id)</th>
         <th>Действие</th>
         <th>Описание</th>
         <th>IP</th>
@@ -43,4 +49,4 @@ $logs = $stmt->fetchAll();
     <?php endforeach; ?>
 </table>
 
-<?php include '../includes/footer.php'; ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

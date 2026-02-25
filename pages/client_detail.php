@@ -2,7 +2,8 @@
 require_once '../includes/security.php';
 require_once '../db.php';
 
-$client_id = intval($_GET['id']);
+$client_id = intval($_GET['id'] ?? 0);
+
 $stmt = $pdo->prepare("SELECT * FROM clients WHERE id = :id");
 $stmt->execute(['id' => $client_id]);
 $client = $stmt->fetch();
@@ -22,7 +23,6 @@ if (!$client) {
 <p><strong>Адрес:</strong> <?php echo htmlspecialchars($client['address']); ?></p>
 
 <h3>Заказы клиента</h3>
-<!-- Здесь список заказов клиента -->
 
 <?php
 $stmt_orders = $pdo->prepare("SELECT * FROM orders WHERE client_id = :client_id");
@@ -40,11 +40,11 @@ $orders = $stmt_orders->fetchAll();
 </tr>
 <?php foreach ($orders as $order): ?>
 <tr>
-    <td><?php echo $order['id']; ?></td>
-    <td><?php echo $order['date']; ?></td>
-    <td><?php echo $order['status']; ?></td>
-    <td><?php echo $order['total']; ?></td>
-    <td><a href="order_detail.php?id=<?php echo $order['id']; ?>">Подробнее</a></td>
+    <td><?php echo (int)$order['id']; ?></td>
+    <td><?php echo htmlspecialchars($order['order_date'] ?? ''); ?></td>
+    <td><?php echo htmlspecialchars($order['status']); ?></td>
+    <td><?php echo htmlspecialchars($order['total']); ?></td>
+    <td><a href="order_detail.php?id=<?php echo (int)$order['id']; ?>">Подробнее</a></td>
 </tr>
 <?php endforeach; ?>
 </table>

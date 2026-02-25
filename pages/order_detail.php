@@ -19,7 +19,7 @@ if ($order_id <= 0) {
     die('Некорректный ID заказа');
 }
 
-// Получаем данные заказа — ИСПРАВЛЕНО: o.date → o.order_date
+// Получаем данные заказа
 $stmt = $pdo->prepare("
     SELECT o.id, o.order_date, o.total, o.status, c.name AS client_name, c.email AS client_email
     FROM orders o

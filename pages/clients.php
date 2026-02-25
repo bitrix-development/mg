@@ -2,12 +2,14 @@
 require_once '../includes/security.php';
 require_once '../db.php';
 
+// ВАЖНО: CRUD тут нет, поэтому событий CRUD пока не логируем.
+// Логировать просмотр списков можно, но обычно это слишком шумно.
+
 // Обработка фильтров и поиска
 $search = $_GET['search'] ?? '';
 $filter_status = $_GET['status'] ?? '';
 
 $query = "SELECT * FROM clients WHERE 1=1";
-
 $params = [];
 
 if ($search) {

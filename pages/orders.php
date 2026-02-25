@@ -4,13 +4,15 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
-require_once '../db.php'; // Используем твой db.php
+require_once '../db.php';
 
 // Проверка авторизации
 if (!isset($_SESSION['user_id'])) {
     header('Location: /pages/login.php');
     exit();
 }
+
+// CRUD тут нет (только просмотр), поэтому не логируем CRUD-события.
 
 // Фильтры
 $search = $_GET['search'] ?? '';
@@ -48,7 +50,7 @@ $orders = $stmt->fetchAll();
 <form method="get" action="">
     <input type="text" name="search" placeholder="Поиск по ID или клиенту" value="<?= htmlspecialchars($search) ?>" />
     <select name="status">
-        <option value="">Все статусы</option>
+        <option value="">Вс�� статусы</option>
         <option value="new" <?= $status == 'new' ? 'selected' : '' ?>>Новый</option>
         <option value="processing" <?= $status == 'processing' ? 'selected' : '' ?>>В обработке</option>
         <option value="completed" <?= $status == 'completed' ? 'selected' : '' ?>>Выполнен</option>
@@ -73,7 +75,7 @@ $orders = $stmt->fetchAll();
         <td><?= htmlspecialchars($order['order_date']) ?></td>
         <td><?= number_format($order['total'], 2, ',', ' ') ?> ₽</td>
         <td><?= htmlspecialchars($order['status']) ?></td>
-        <td><a href="order_detail.php?id=<?= $order['id'] ?>">Подробнее</a></td>
+        <td><a href="order_detail.php?id=<?= (int)$order['id'] ?>">Подробнее</a></td>
     </tr>
     <?php endforeach; ?>
 </table>
