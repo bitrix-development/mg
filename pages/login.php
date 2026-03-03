@@ -1,10 +1,9 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+require_once __DIR__ . '/../db.php';
 
-session_start();
+use RateLimiter;
 
+<<<<<<< HEAD
 // Перед показом формы или обработкой, сохраняем реферер
 if (!isset($_SESSION['redirect_after_login'])) {
     $ref = $_SERVER['HTTP_REFERER'] ?? '/';
@@ -104,3 +103,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </form>
 
 <?php include '../includes/footer.php'; ?>
+=======
+// logic to implement RateLimiter and logging
+
+if ($login_success) {
+    Logger::logAction($userId, 'login_success', 'User logged in successfully.');
+} else {
+    Logger::logAction($userId, 'login_failed', 'Failed login attempt.');
+}
+>>>>>>> 333997661dc3c8033572f82424977a5359e0fa55
