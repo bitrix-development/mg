@@ -103,12 +103,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </form>
 
 <?php include '../includes/footer.php'; ?>
-=======
-// logic to implement RateLimiter and logging
 
-if ($login_success) {
-    Logger::logAction($userId, 'login_success', 'User logged in successfully.');
-} else {
-    Logger::logAction($userId, 'login_failed', 'Failed login attempt.');
-}
->>>>>>> 333997661dc3c8033572f82424977a5359e0fa55
