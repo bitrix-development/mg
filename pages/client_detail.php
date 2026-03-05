@@ -59,7 +59,7 @@ $stmt->execute(['id' => $client_id]);
 $client = $stmt->fetch();
 
 if (!$client) {
-    die('Клиен�� не найден');
+    die('Клиент не найден');
 }
 
 // заказы клиента
