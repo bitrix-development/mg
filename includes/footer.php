@@ -1,4 +1,6 @@
-<!-- Updated footer with new copyright year -->
+</main>
 <footer>
-  <p>&copy; 2026 Your Company Name. All rights reserved.</p>
+  <p>&copy; 2026 mg-ceramic.ru</p>
 </footer>
+</body>
+</html>
