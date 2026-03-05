@@ -172,3 +172,139 @@ footer{
 @media (min-width: 1040px){
   .card{ grid-column: span 4; }
 }
+
+
+/* grid layout for dashboard sections */
+.dashboard-grid--3{
+  grid-template-columns: 1fr;
+}
+@media (min-width: 980px){
+  .dashboard-grid--3{
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: start;
+  }
+}
+
+/* card header */
+.card-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.card-link{
+  color: rgba(255,255,255,.72);
+  text-decoration:none;
+  font-size: 12px;
+  border-bottom: 1px dashed rgba(255,255,255,.22);
+}
+.card-link:hover{
+  color: rgba(255,255,255,.92);
+  border-bottom-color: rgba(255,255,255,.40);
+}
+
+/* lists */
+.list{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+}
+.list-item{
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+}
+.empty{
+  color: rgba(255,255,255,.58);
+}
+
+/* tables */
+.table-wrap{
+  overflow:auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+}
+.table{
+  width:100%;
+  border-collapse: collapse;
+  min-width: 520px;
+}
+.table th,
+.table td{
+  padding: 10px 12px;
+  text-align:left;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  color: rgba(255,255,255,.85);
+  font-size: 13px;
+}
+.table thead th{
+  position: sticky;
+  top: 0;
+  background: rgba(10,16,30,.75);
+  backdrop-filter: blur(8px);
+  color: rgba(255,255,255,.70);
+  font-weight: 600;
+}
+.table tbody tr:hover td{
+  background: rgba(255,255,255,.04);
+}
+
+/* modal */
+.modal-backdrop{
+  position: fixed;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 22px;
+  background: rgba(0,0,0,.55);
+  z-index: 9999;
+}
+.modal-backdrop.is-hidden{
+  opacity: 0;
+  transition: opacity .15s ease;
+}
+.modal{
+  width: min(520px, 100%);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+  box-shadow: 0 30px 120px rgba(0,0,0,.55);
+  backdrop-filter: blur(12px);
+  padding: 18px 18px 16px;
+  position: relative;
+}
+.modal-title{
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.modal-text{
+  margin: 0;
+  color: rgba(255,255,255,.74);
+}
+.modal-close{
+  position:absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.85);
+  font-size: 20px;
+  line-height: 32px;
+  cursor:pointer;
+}
+.modal-close:hover{
+  background: rgba(255,255,255,.10);
+}
+.modal-close:focus-visible{
+  outline: 2px solid rgba(124,58,237,.55);
+  outline-offset: 2px;
+}
