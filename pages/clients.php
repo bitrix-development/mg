@@ -72,11 +72,11 @@ $clients = $stmt->fetchAll();
             </tr>
         </thead>
         <tbody>
-        <?php if (empty($clients)): ?>
-            <tr>
-                <td colspan="5" style="color: rgba(255,255,255,.62);">Ничего не найдено.</td>
-            </tr>
-        <?php else: ?>
+       <?php if (empty($clients)): ?>
+    <tr>
+        <td colspan="5" class="muted">Ничего не найдено.</td>
+    </tr>
+<?php else: ?>
             <?php foreach ($clients as $client): ?>
             <tr>
                 <td><?= h($client['id']) ?></td>
