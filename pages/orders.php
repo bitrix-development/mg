@@ -12,7 +12,36 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// CRUD тут нет (только просмотр), поэтому не логируем CRUD-события.
+function h($v): string {
+    return htmlspecialchars((string)($v ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+function formatDt($v): string {
+    if (!$v) return '';
+    $ts = strtotime((string)$v);
+    if (!$ts) return (string)$v;
+    return date('d.m.Y H:i', $ts);
+}
+
+function statusLabel(?string $status): string {
+    return match ($status) {
+        'new' => 'Новый',
+        'processing' => 'В обработке',
+        'completed' => 'Выполнен',
+        'cancelled' => 'Отменён',
+        default => (string)($status ?? ''),
+    };
+}
+
+function statusBadgeClass(?string $status): string {
+    return match ($status) {
+        'new' => 'status status--new',
+        'processing' => 'status status--processing',
+        'completed' => 'status status--completed',
+        'cancelled' => 'status status--cancelled',
+        default => 'status',
+    };
+}
 
 // Фильтры
 $search = $_GET['search'] ?? '';
@@ -47,37 +76,55 @@ $orders = $stmt->fetchAll();
 
 <h2>Заказы</h2>
 
-<form method="get" action="">
-    <input type="text" name="search" placeholder="Поиск по ID или клиенту" value="<?= htmlspecialchars($search) ?>" />
+<form method="get" action="" class="filters">
+    <input type="text" name="search" placeholder="Поиск по ID или клиенту" value="<?= h($search) ?>" />
     <select name="status">
-        <option value="">Вс�� статусы</option>
-        <option value="new" <?= $status == 'new' ? 'selected' : '' ?>>Новый</option>
-        <option value="processing" <?= $status == 'processing' ? 'selected' : '' ?>>В обработке</option>
-        <option value="completed" <?= $status == 'completed' ? 'selected' : '' ?>>Выполнен</option>
-        <option value="cancelled" <?= $status == 'cancelled' ? 'selected' : '' ?>>Отменён</option>
+        <option value="">Все статусы</option>
+        <option value="new" <?= $status === 'new' ? 'selected' : '' ?>>Новый</option>
+        <option value="processing" <?= $status === 'processing' ? 'selected' : '' ?>>В обработке</option>
+        <option value="completed" <?= $status === 'completed' ? 'selected' : '' ?>>Выполнен</option>
+        <option value="cancelled" <?= $status === 'cancelled' ? 'selected' : '' ?>>Отменён</option>
     </select>
     <button type="submit">Фильтровать</button>
 </form>
 
-<table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
-    <tr>
-        <th>ID</th>
-        <th>Клиент</th>
-        <th>Дата</th>
-        <th>Сумма</th>
-        <th>Статус</th>
-        <th>Действия</th>
-    </tr>
-    <?php foreach ($orders as $order): ?>
-    <tr>
-        <td><?= htmlspecialchars($order['id']) ?></td>
-        <td><?= htmlspecialchars($order['client_name']) ?></td>
-        <td><?= htmlspecialchars($order['order_date']) ?></td>
-        <td><?= number_format($order['total'], 2, ',', ' ') ?> ₽</td>
-        <td><?= htmlspecialchars($order['status']) ?></td>
-        <td><a href="order_detail.php?id=<?= (int)$order['id'] ?>">Подробнее</a></td>
-    </tr>
-    <?php endforeach; ?>
-</table>
+<div class="table-wrap">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Клиент</th>
+                <th>Дата</th>
+                <th>Сумма</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php if (empty($orders)): ?>
+            <tr>
+                <td colspan="6" style="color: rgba(255,255,255,.62);">Ничего не найдено.</td>
+            </tr>
+        <?php else: ?>
+            <?php foreach ($orders as $order): ?>
+            <tr>
+                <td><?= h($order['id']) ?></td>
+                <td><?= h($order['client_name']) ?></td>
+                <td><?= h(formatDt($order['order_date'] ?? '')) ?></td>
+                <td><?= number_format((float)$order['total'], 2, ',', ' ') ?> ₽</td>
+                <td>
+                    <span class="<?= h(statusBadgeClass($order['status'] ?? null)) ?>">
+                        <?= h(statusLabel($order['status'] ?? null)) ?>
+                    </span>
+                </td>
+                <td>
+                    <a class="link" href="order_detail.php?id=<?= (int)$order['id'] ?>">Подробнее</a>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        </tbody>
+    </table>
+</div>
 
 <?php include '../includes/footer.php'; ?>
