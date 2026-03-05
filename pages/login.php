@@ -1,9 +1,10 @@
 <?php
-require_once __DIR__ . '/../db.php';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-use RateLimiter;
+session_start();
 
-<<<<<<< HEAD
 // Перед показом формы или обработкой, сохраняем реферер
 if (!isset($_SESSION['redirect_after_login'])) {
     $ref = $_SERVER['HTTP_REFERER'] ?? '/';
@@ -103,4 +104,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </form>
 
 <?php include '../includes/footer.php'; ?>
-
