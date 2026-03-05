@@ -2,14 +2,31 @@
 require_once '../includes/security.php';
 require_once '../db.php';
 
-// ВАЖНО: CRUD тут нет, поэтому событий CRUD пока не логируем.
-// Логировать просмотр списков можно, но обычно это слишком шумно.
+function h($v): string {
+    return htmlspecialchars((string)($v ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
 
-// Обработка фильтров и поиска
+function clientStatusLabel(?string $status): string {
+    return match ($status) {
+        'active' => 'Активный',
+        'inactive' => 'Неактивный',
+        default => (string)($status ?? ''),
+    };
+}
+
+function clientStatusBadgeClass(?string $status): string {
+    return match ($status) {
+        'active' => 'status status--completed',   // зелёный
+        'inactive' => 'status status--cancelled', // красный
+        default => 'status',
+    };
+}
+
+// Фильтры
 $search = $_GET['search'] ?? '';
 $filter_status = $_GET['status'] ?? '';
 
-$query = "SELECT * FROM clients WHERE 1=1";
+$query = "SELECT id, name, email, status FROM clients WHERE 1=1";
 $params = [];
 
 if ($search) {
@@ -22,6 +39,8 @@ if ($filter_status) {
     $params['status'] = $filter_status;
 }
 
+$query .= " ORDER BY id DESC";
+
 $stmt = $pdo->prepare($query);
 $stmt->execute($params);
 $clients = $stmt->fetchAll();
@@ -31,33 +50,51 @@ $clients = $stmt->fetchAll();
 
 <h2>Клиенты</h2>
 
-<form method="get" action="">
-    <input type="text" name="search" placeholder="Поиск..." value="<?php echo htmlspecialchars($search); ?>" />
+<form method="get" action="" class="filters">
+    <input type="text" name="search" placeholder="Поиск..." value="<?= h($search) ?>" />
     <select name="status">
         <option value="">Все статусы</option>
-        <option value="active" <?php if ($filter_status=='active') echo 'selected'; ?>>Активные</option>
-        <option value="inactive" <?php if ($filter_status=='inactive') echo 'selected'; ?>>Неактивные</option>
+        <option value="active" <?= $filter_status === 'active' ? 'selected' : '' ?>>Активные</option>
+        <option value="inactive" <?= $filter_status === 'inactive' ? 'selected' : '' ?>>Неактивные</option>
     </select>
     <button type="submit">Применить</button>
 </form>
 
-<table>
-<tr>
-    <th>ID</th>
-    <th>Название</th>
-    <th>Email</th>
-    <th>Статус</th>
-    <th>Действия</th>
-</tr>
-<?php foreach ($clients as $client): ?>
-<tr>
-    <td><?php echo $client['id']; ?></td>
-    <td><?php echo htmlspecialchars($client['name']); ?></td>
-    <td><?php echo htmlspecialchars($client['email']); ?></td>
-    <td><?php echo $client['status']; ?></td>
-    <td><a href="client_detail.php?id=<?php echo $client['id']; ?>">Подробнее</a></td>
-</tr>
-<?php endforeach; ?>
-</table>
+<div class="table-wrap">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Email</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php if (empty($clients)): ?>
+            <tr>
+                <td colspan="5" style="color: rgba(255,255,255,.62);">Ничего не найдено.</td>
+            </tr>
+        <?php else: ?>
+            <?php foreach ($clients as $client): ?>
+            <tr>
+                <td><?= h($client['id']) ?></td>
+                <td><?= h($client['name']) ?></td>
+                <td><?= h($client['email']) ?></td>
+                <td>
+                    <span class="<?= h(clientStatusBadgeClass($client['status'] ?? null)) ?>">
+                        <?= h(clientStatusLabel($client['status'] ?? null)) ?>
+                    </span>
+                </td>
+                <td>
+                    <a class="link" href="client_detail.php?id=<?= (int)$client['id'] ?>">Подробнее</a>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        </tbody>
+    </table>
+</div>
 
 <?php include '../includes/footer.php'; ?>
