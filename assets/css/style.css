@@ -389,3 +389,60 @@ footer{
 .filters button:hover{
   background: rgba(124,58,237,.30);
 }
+
+/* alerts */
+.alert{
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.90);
+}
+.alert--error{
+  border-color: rgba(239,68,68,.30);
+  background: rgba(239,68,68,.12);
+}
+.alert--success{
+  border-color: rgba(34,197,94,.30);
+  background: rgba(34,197,94,.12);
+}
+
+/* form */
+.form{
+  margin-top: 10px;
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+}
+.form-row label{
+  display:block;
+  margin-bottom: 6px;
+  color: rgba(255,255,255,.78);
+  font-size: 13px;
+}
+.form-row input{
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.92);
+}
+.help{
+  margin: 6px 0 0;
+  color: rgba(255,255,255,.60);
+  font-size: 12px;
+}
+.form button{
+  align-self:flex-start;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(124,58,237,.22);
+  color: rgba(255,255,255,.92);
+  cursor:pointer;
+}
+.form button:hover{
+  background: rgba(124,58,237,.30);
+}
