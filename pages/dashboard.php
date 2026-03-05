@@ -2,6 +2,37 @@
 require_once '../includes/security.php';
 require_once '../db.php';
 
+function h($v): string {
+    return htmlspecialchars((string)($v ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+function formatDt($v): string {
+    if (!$v) return '';
+    $ts = strtotime((string)$v);
+    if (!$ts) return (string)$v; // fallback, если формат неожиданный
+    return date('d.m.Y H:i', $ts);
+}
+
+function statusLabel(?string $status): string {
+    return match ($status) {
+        'new' => 'Новый',
+        'processing' => 'В обработке',
+        'completed' => 'Выполнен',
+        'cancelled' => 'Отменён',
+        default => (string)($status ?? ''),
+    };
+}
+
+function statusBadgeClass(?string $status): string {
+    return match ($status) {
+        'new' => 'status status--new',
+        'processing' => 'status status--processing',
+        'completed' => 'status status--completed',
+        'cancelled' => 'status status--cancelled',
+        default => 'status',
+    };
+}
+
 // --- 1) последние 10 клиентов (название фирмы) ---
 $clients = [];
 try {
@@ -103,7 +134,7 @@ unset($_SESSION['welcome_once']);
     <?php else: ?>
       <ul class="list">
         <?php foreach ($clients as $c): ?>
-          <li class="list-item"><?= htmlspecialchars($c['name'] ?? '') ?></li>
+          <li class="list-item"><?= h($c['name'] ?? '') ?></li>
         <?php endforeach; ?>
       </ul>
     <?php endif; ?>
@@ -132,11 +163,15 @@ unset($_SESSION['welcome_once']);
           <tbody>
             <?php foreach ($lastOrders as $o): ?>
               <tr>
-                <td><?= htmlspecialchars($o['id'] ?? '') ?></td>
-                <td><?= htmlspecialchars($o['client_name'] ?? '') ?></td>
-                <td><?= htmlspecialchars($o['order_date'] ?? '') ?></td>
+                <td><?= h($o['id'] ?? '') ?></td>
+                <td><?= h($o['client_name'] ?? '') ?></td>
+                <td><?= h(formatDt($o['order_date'] ?? '')) ?></td>
                 <td><?= isset($o['total']) ? number_format((float)$o['total'], 2, ',', ' ') . ' ₽' : '' ?></td>
-                <td><?= htmlspecialchars($o['status'] ?? '') ?></td>
+                <td>
+                  <span class="<?= h(statusBadgeClass($o['status'] ?? null)) ?>">
+                    <?= h(statusLabel($o['status'] ?? null)) ?>
+                  </span>
+                </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
@@ -165,8 +200,8 @@ unset($_SESSION['welcome_once']);
           <tbody>
             <?php foreach ($lastLogins as $l): ?>
               <tr>
-                <td><?= htmlspecialchars($l['created_at'] ?? '') ?></td>
-                <td><?= htmlspecialchars($l['ip_address'] ?? '') ?></td>
+                <td><?= h(formatDt($l['created_at'] ?? '')) ?></td>
+                <td><?= h($l['ip_address'] ?? '') ?></td>
               </tr>
             <?php endforeach; ?>
           </tbody>
