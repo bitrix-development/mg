@@ -67,7 +67,7 @@ $logs = $stmt->fetchAll();
   </table>
 </div>
 
-<p class="help" style="margin-top: 10px;">
+<p class="help mt-10">
   <a class="link" href="/pages/dashboard.php">← Назад в кабинет</a>
 </p>
 
