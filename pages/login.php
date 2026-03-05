@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <button type="submit">Войти</button>
 
-  <p class="help" style="margin-top: 8px;">
+  <p class="help help help--mt">
     <a class="link" href="/forgot_password.php">Забыли пароль?</a>
   </p>
 </form>
