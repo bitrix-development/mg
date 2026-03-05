@@ -82,7 +82,7 @@ foreach ($logs as $line) {
     </thead>
     <tbody>
       <?php if (empty($rows)): ?>
-        <tr><td colspan="5" style="color: rgba(255,255,255,.62);">Нет записей.</td></tr>
+        <tr><td colspan="5" class="muted">Нет записей.</td></tr>
       <?php else: ?>
         <?php foreach ($rows as $r): ?>
           <tr>
