@@ -448,3 +448,19 @@ footer{
 }
 
 .help--mt{ margin-top: 8px; }
+
+/* utilities */
+.muted{ color: rgba(255,255,255,.62); }
+.mt-10{ margin-top: 10px; }
+.mt-12{ margin-top: 12px; }
+
+/* pagination */
+.pagination{
+  margin-top: 12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap: 8px;
+}
+.pagination [aria-current="page"]{
+  border-bottom-color: rgba(255,255,255,.65);
+}
