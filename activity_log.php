@@ -47,9 +47,11 @@ $logs = $stmt->fetchAll();
     </thead>
     <tbody>
       <?php if (empty($logs)): ?>
-        <tr>
-          <td colspan="5" style="color: rgba(255,255,255,.62);">Пока нет записей.</td>
-        </tr>
+<td colspan="5" class="muted">Пока нет записей.</td>
+
+<p class="help mt-10">
+  <a class="link" href="/pages/dashboard.php">← Назад в кабинет</a>
+</p>
       <?php else: ?>
         <?php foreach ($logs as $log): ?>
           <tr>
