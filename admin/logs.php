@@ -67,7 +67,7 @@ foreach ($logs as $line) {
 
 <h2>Админ: архив логов</h2>
 
-<p class="help">Всего записей в файле: <?= (int)$total ?>. Показан��: <?= count($rows) ?>.</p>
+<p class="help">Всего записей в файле: <?= (int)$total ?>. Показаны: <?= count($rows) ?>.</p>
 
 <div class="table-wrap">
   <table class="table">
