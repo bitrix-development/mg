@@ -13,8 +13,39 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../db.php';
 
+function h($v): string {
+    return htmlspecialchars((string)($v ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+function formatDt($v): string {
+    if (!$v) return '';
+    $ts = strtotime((string)$v);
+    if (!$ts) return (string)$v;
+    return date('d.m.Y H:i', $ts);
+}
+
+function statusLabel(?string $status): string {
+    return match ($status) {
+        'new' => 'Новый',
+        'processing' => 'В обработке',
+        'completed' => 'Выполнен',
+        'cancelled' => 'Отменён',
+        default => (string)($status ?? ''),
+    };
+}
+
+function statusBadgeClass(?string $status): string {
+    return match ($status) {
+        'new' => 'status status--new',
+        'processing' => 'status status--processing',
+        'completed' => 'status status--completed',
+        'cancelled' => 'status status--cancelled',
+        default => 'status',
+    };
+}
+
 // Получаем ID заказа
-$order_id = intval($_GET['id'] ?? 0);
+$order_id = (int)($_GET['id'] ?? 0);
 if ($order_id <= 0) {
     die('Некорректный ID заказа');
 }
@@ -37,62 +68,85 @@ if (!$order) {
 $stmt_items = $pdo->prepare("SELECT product_name, quantity, price FROM order_items WHERE order_id = ?");
 $stmt_items->execute([$order_id]);
 $items = $stmt_items->fetchAll();
-
-// хелпер, чтобы не ловить Deprecated на null
-function h($v): string {
-    return htmlspecialchars((string)($v ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-}
 ?>
 
 <?php include '../includes/header.php'; ?>
 
 <h2>Детали заказа #<?= h($order['id']) ?></h2>
 
-<table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
-    <tr>
-        <th width="20%">Поле</th>
-        <th width="80%">Значение</th>
-    </tr>
-    <tr>
-        <td><strong>ID заказа</strong></td>
-        <td><?= h($order['id']) ?></td>
-    </tr>
-    <tr>
-        <td><strong>Дата</strong></td>
-        <td><?= h($order['order_date']) ?></td>
-    </tr>
-    <tr>
-        <td><strong>Клиент</strong></td>
-        <td><?= h($order['client_name']) ?><?= $order['client_email'] ? ' (' . h($order['client_email']) . ')' : '' ?></td>
-    </tr>
-    <tr>
-        <td><strong>Статус</strong></td>
-        <td><?= h($order['status']) ?></td>
-    </tr>
-    <tr>
-        <td><strong>Сумма</strong></td>
-        <td><?= number_format((float)$order['total'], 2, ',', ' ') ?> ₽</td>
-    </tr>
-</table>
+<div class="table-wrap">
+    <table class="table">
+        <thead>
+            <tr>
+                <th width="30%">Поле</th>
+                <th width="70%">Значение</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>ID заказа</strong></td>
+                <td><?= h($order['id']) ?></td>
+            </tr>
+            <tr>
+                <td><strong>Дата</strong></td>
+                <td><?= h(formatDt($order['order_date'] ?? '')) ?></td>
+            </tr>
+            <tr>
+                <td><strong>Клиент</strong></td>
+                <td>
+                    <?= h($order['client_name']) ?>
+                    <?= !empty($order['client_email']) ? ' (' . h($order['client_email']) . ')' : '' ?>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Статус</strong></td>
+                <td>
+                    <span class="<?= h(statusBadgeClass($order['status'] ?? null)) ?>">
+                        <?= h(statusLabel($order['status'] ?? null)) ?>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Сумма</strong></td>
+                <td><?= number_format((float)$order['total'], 2, ',', ' ') ?> ₽</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
-<h3>Позиции заказа</h3>
-<table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
-    <tr>
-        <th>Товар</th>
-        <th>Количество</th>
-        <th>Цена</th>
-        <th>Сумма</th>
-    </tr>
-<?php foreach ($items as $item): ?>
-<tr>
-    <td><?= h($item['product_name'] ?? 'Не указано') ?></td>
-    <td><?= h($item['quantity']) ?></td>
-    <td><?= $item['price'] !== null ? number_format((float)$item['price'], 2, ',', ' ') . ' ₽' : '' ?></td>
-    <td><?= $item['price'] !== null ? number_format(((float)$item['quantity']) * ((float)$item['price']), 2, ',', ' ') . ' ₽' : '' ?></td>
-</tr>
-<?php endforeach; ?>
-</table>
+<h3 style="margin-top: 16px;">Позиции заказа</h3>
 
-<p><a href="orders.php">← Вернуться к списку заказов</a></p>
+<div class="table-wrap">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Количество</th>
+                <th>Цена</th>
+                <th>Сумма</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php if (empty($items)): ?>
+            <tr>
+                <td colspan="4" style="color: rgba(255,255,255,.62);">Нет позиций.</td>
+            </tr>
+        <?php else: ?>
+            <?php foreach ($items as $item): ?>
+            <tr>
+                <td><?= h($item['product_name'] ?? 'Не указано') ?></td>
+                <td><?= h($item['quantity'] ?? '') ?></td>
+                <td><?= $item['price'] !== null ? number_format((float)$item['price'], 2, ',', ' ') . ' ₽' : '' ?></td>
+                <td><?= $item['price'] !== null ? number_format(((float)($item['quantity'] ?? 0)) * ((float)$item['price']), 2, ',', ' ') . ' ₽' : '' ?></td>
+            </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
+<p style="margin-top: 14px;">
+    <a class="link" href="orders.php">← Вернуться к списку заказов</a>
+</p>
 
 <?php include '../includes/footer.php'; ?>
