@@ -99,7 +99,7 @@ foreach ($logs as $line) {
 </div>
 
 <?php if ($totalPages > 1): ?>
-  <div class="pagination" style="margin-top: 12px; display:flex; flex-wrap:wrap; gap:8px;">
+ <div class="pagination">
     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
       <a class="link" href="?page=<?= $i ?>" <?= $i === $page ? 'aria-current="page"' : '' ?>>
         <?= $i ?>
@@ -108,7 +108,7 @@ foreach ($logs as $line) {
   </div>
 <?php endif; ?>
 
-<p class="help" style="margin-top: 10px;">
+<p class="help mt-10">
   <a class="link" href="/pages/dashboard.php">← Назад в кабинет</a>
 </p>
 
