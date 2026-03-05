@@ -101,11 +101,11 @@ $orders = $stmt->fetchAll();
             </tr>
         </thead>
         <tbody>
-        <?php if (empty($orders)): ?>
-            <tr>
-                <td colspan="6" style="color: rgba(255,255,255,.62);">Ничего не найдено.</td>
-            </tr>
-        <?php else: ?>
+<?php if (empty($orders)): ?>
+    <tr>
+        <td colspan="6" class="muted">Ничего не найдено.</td>
+    </tr>
+<?php else: ?>
             <?php foreach ($orders as $order): ?>
             <tr>
                 <td><?= h($order['id']) ?></td>
