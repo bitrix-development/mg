@@ -4,7 +4,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
-require_once '../db.php'; // Используем ТВОЙ db.php
+require_once '../db.php';
 
 // Проверка авторизации
 if (!isset($_SESSION['user_id'])) {
@@ -12,7 +12,11 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
+function h($v): string {
+    return htmlspecialchars((string)($v ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+$user_id = (int)$_SESSION['user_id'];
 
 // Получаем данные пользователя
 $stmt = $pdo->prepare("SELECT name, email FROM users WHERE id = ?");
@@ -28,8 +32,9 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
-    $new_password = $_POST['new_password'] ?? '';
-    if (empty($new_password)) {
+    $new_password = (string)($_POST['new_password'] ?? '');
+
+    if ($new_password === '') {
         $error = "Введите новый пароль.";
     } elseif (strlen($new_password) < 8) {
         $error = "Пароль должен быть не менее 8 символов.";
@@ -46,22 +51,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
 
 <h2>Профиль</h2>
 
-<p><strong>Имя:</strong> <?= htmlspecialchars($user['name']) ?></p>
-<p><strong>Email:</strong> <?= htmlspecialchars($user['email']) ?></p>
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr>
+        <th width="30%">Поле</th>
+        <th width="70%">Значение</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Имя</strong></td>
+        <td><?= h($user['name']) ?></td>
+      </tr>
+      <tr>
+        <td><strong>Email</strong></td>
+        <td><?= h($user['email']) ?></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <?php if ($error): ?>
-    <p style="color:red;"><?= htmlspecialchars($error) ?></p>
+  <div class="alert alert--error" role="alert"><?= h($error) ?></div>
 <?php endif; ?>
 
 <?php if ($success): ?>
-    <p style="color:green;"><?= htmlspecialchars($success) ?></p>
+  <div class="alert alert--success" role="status"><?= h($success) ?></div>
 <?php endif; ?>
 
-<h3>Смена пароля</h3>
-<form method="POST" action="">
-    <label for="new_password">Новый пароль:</label><br>
-    <input type="password" name="new_password" id="new_password" required minlength="8"><br><br>
-    <button type="submit" name="change_password">Сменить пароль</button>
+<h3 style="margin-top: 16px;">Смена пароля</h3>
+
+<form method="POST" action="" class="form">
+  <div class="form-row">
+    <label for="new_password">Новый пароль</label>
+    <input type="password" name="new_password" id="new_password" required minlength="8" autocomplete="new-password">
+    <p class="help">Минимум 8 символов.</p>
+  </div>
+
+  <button type="submit" name="change_password">Сменить пароль</button>
 </form>
 
 <?php include '../includes/footer.php'; ?>
